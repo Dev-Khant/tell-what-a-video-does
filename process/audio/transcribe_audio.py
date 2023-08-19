@@ -6,12 +6,13 @@ from pydub import AudioSegment
 
 
 class GenerateTranscription:
-    def __init__(self, HF_KEY, audio_path):
+    def __init__(self, video_link, HF_KEY):
+        self.video_link = video_link
         self.HF_KEY = HF_KEY
         self.API_URL = (
-            "https://api-inference.huggingface.co/models/openai/whisper-large"
+            "https://api-inference.huggingface.co/models/openai/whisper-medium"
         )
-        self.content_type = mimetypes.guess_type(audio_path)[0]
+        self.content_type = ""
         self.chunk_duration = 30 * 1000
         self.text = []
 
@@ -23,8 +24,8 @@ class GenerateTranscription:
         response = requests.request("POST", self.API_URL, headers=headers, data=data)
         return json.loads(response.content.decode("utf-8"))["text"]
 
-    def segment_audio(self):
-        audio = AudioSegment.from_file()
+    def segment_audio(self, audio_path):
+        audio = AudioSegment.from_file(audio_path)
 
         # Calculate the total number of chunks
         total_chunks = len(audio) // self.chunk_duration
@@ -44,3 +45,7 @@ class GenerateTranscription:
             self.text.append(self.get_transcription(data))
 
         return self.text
+
+    def process_audio(self):
+        audio_path = ""
+        self.content_type = mimetypes.guess_type(audio_path)[0]
