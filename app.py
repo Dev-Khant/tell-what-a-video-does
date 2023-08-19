@@ -7,6 +7,8 @@ video_link = st.text_input("Enter Youtube Video Link")
 
 huggingface_token = st.text_input("Enter Hugging Face Token")
 
+serpapi_token = st.text_input("Enter SerpAPI Token")
+
 if st.button("Explain"):
     if video_link and huggingface_token:
         get_explanation = Explain(video_link, huggingface_token)
