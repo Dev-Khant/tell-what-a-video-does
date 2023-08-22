@@ -1,5 +1,5 @@
-from video.explain_video import VideoExplanation
-from audio.transcribe_audio import GenerateTranscription
+from process.video.explain_video import VideoExplanation
+from process.audio.transcribe_audio import GenerateTranscription
 
 
 class Explain:
@@ -16,3 +16,6 @@ class Explain:
         # for audio
         audio_part = GenerateTranscription(self.yt_link, self.HF_KEY)
         audio_transcription = audio_part.process_audio()
+
+        print("Video Explanation : ", video_explanation)
+        print("Audio Part : ", audio_transcription)

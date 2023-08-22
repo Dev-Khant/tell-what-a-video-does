@@ -11,7 +11,7 @@ serpapi_token = st.text_input("Enter SerpAPI Token")
 
 if st.button("Explain"):
     if video_link and huggingface_token:
-        get_explanation = Explain(video_link, huggingface_token)
+        get_explanation = Explain(video_link, huggingface_token, serpapi_token)
         result_text = get_explanation.run()
 
         st.text_area("Processed Text", result_text, height=200)

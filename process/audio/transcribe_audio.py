@@ -1,8 +1,14 @@
 import os
 import json, requests
+import logging
 
 import mimetypes
 from pydub import AudioSegment
+from pytube import YouTube
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("Audio")
 
 
 class GenerateTranscription:
@@ -41,11 +47,28 @@ class GenerateTranscription:
                 data = f.read()
 
             os.remove(f"chunk_{i + 1}.mp3")
-
+            logger.info(f"Transcribing chunk : {i+1}")
             self.text.append(self.get_transcription(data))
 
         return self.text
 
     def process_audio(self):
-        audio_path = ""
+        """
+        Get audio from video and process it
+        """
+        logger.info("Started audio processing")
+        yt = YouTube(self.video_link)
+        video = yt.streams.filter(only_audio=True).first()
+
+        # download the file
+        audio_path = video.download(
+            output_path="downloaded_audio", filename="audio.mp3"
+        )
+        logger.info("Audio downloaded")
         self.content_type = mimetypes.guess_type(audio_path)[0]
+
+        logger.info("Transcription started")
+        transcription = self.segment_audio(audio_path)
+        os.remove(audio_path)
+        logger.info("Transcription Done!")
+        return transcription
