@@ -1,10 +1,16 @@
 import cv2
 import time
+import requests
+import base64
+import logging
 
 import torch
 from pytube import YouTube
 from serpapi import GoogleSearch
 from transformers import AutoImageProcessor, SwiftFormerModel
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("Video")
 
 
 class VideoExplanation:
@@ -23,22 +29,46 @@ class VideoExplanation:
 
         self.previous_embeddings = []
         self.similarity_threshold = 0.2
+        self.img_results = []
 
-    def image_info(self, path):
+    def upload_img(self, frame):
+        """
+        Upload image to Imgur
+        """
+        # Set API endpoint and headers
+        url = "https://api.imgur.com/3/image"
+        headers = {"Authorization": "Client-ID c17d9d047012640"}
+
+        # Convert the frame to JPEG format
+        _, buffer = cv2.imencode(".jpg", frame)
+
+        # Convert the image data to a base64 encoded string
+        base64_data = base64.b64encode(buffer).decode("utf-8")
+
+        # Upload image to Imgur and get URL
+        response = requests.post(url, headers=headers, data={"image": base64_data})
+        url = response.json()["data"]["link"]
+        return url
+
+    def image_info(self, img_url):
         """
         Get image info using SerpApi
         """
-
+        # Set params for google lens
         params = {
             "engine": "google_lens",
-            "url": "",
-            "api_key": "93795a8ee93145e79651985b94fe655769bd217b6ca98c1128153125d97b8b49",
+            "url": img_url,
+            "api_key": self.SERP_KEY,
         }
 
         search = GoogleSearch(params)
         results = search.get_dict()
-        titles = sorted([res["title"] for res in results["visual_matches"]], key=len)
-        return ".".join(titles)
+        title = results.get("knowledge_graph", [{"title": ""}])[0]["title"]
+        texts = [res.get("text", "") for res in results.get("text_results", [])]
+        visual_titles = sorted(
+            [res["title"] for res in results["visual_matches"]], key=len
+        )[:5]
+        return {"title": title, "texts": texts, "visual_titles": visual_titles}
 
     def check_similarity(self, img):
         """
@@ -64,10 +94,7 @@ class VideoExplanation:
         """
         Get images from video for explanation
         """
-
-        # Path to save the frames
-        output_path = ""
-
+        logger.info("Starting video processing")
         # Time interval in seconds
         interval = 2
 
@@ -83,7 +110,6 @@ class VideoExplanation:
 
         while cap.isOpened():
             ret, frame = cap.read()
-
             if not ret:
                 break
 
@@ -99,9 +125,12 @@ class VideoExplanation:
                     continue
 
                 # Save the captured frame
-                image_filename = f"{output_path}frame_{frame_count:04d}.jpg"
-                cv2.imwrite(image_filename, frame)
-                print(f"Captured: {image_filename}")
+                logger.info(f"Image used : {frame_count}")
+                img_url = self.upload_img(frame)
+                self.img_results.append(self.image_info(img_url))
+                logger.info("Image info extracted")
 
         # Release the video capture object and close windows
         cap.release()
+        logger.info("Video processing Done!")
+        return self.img_results
