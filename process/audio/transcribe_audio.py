@@ -24,7 +24,7 @@ class GenerateTranscription:
         )
         self.content_type = ""
         self.chunk_duration = 30 * 1000
-        self.text = []
+        self.text = ""
 
     def get_transcription(self, data):
         """
@@ -58,7 +58,7 @@ class GenerateTranscription:
 
             os.remove(f"chunk_{i + 1}.mp3")
             logger.info(f"Transcribing chunk : {i+1}")
-            self.text.append(self.get_transcription(data))
+            self.text += self.get_transcription(data)
 
         return self.text
 
