@@ -35,6 +35,7 @@ class VideoExplanation:
         """
         Upload image to Imgur
         """
+
         # Set API endpoint and headers
         url = "https://api.imgur.com/3/image"
         headers = {"Authorization": "Client-ID c17d9d047012640"}
@@ -54,6 +55,7 @@ class VideoExplanation:
         """
         Get image info using SerpApi
         """
+
         # Set params for google lens
         params = {
             "engine": "google_lens",
@@ -61,6 +63,7 @@ class VideoExplanation:
             "api_key": self.SERP_KEY,
         }
 
+        # Do google search
         search = GoogleSearch(params)
         results = search.get_dict()
         title = results.get("knowledge_graph", [{"title": ""}])[0]["title"]
@@ -74,11 +77,14 @@ class VideoExplanation:
         """
         Calculate similarity between current and previous all considered images
         """
+
+        # Get embedding from model
         inputs = self.image_processor(img, return_tensors="pt")
         with torch.no_grad():
             output = self.model(**inputs).last_hidden_state[:, 0][0]
-
         output = torch.nn.functional.normalize(output.view(-1), p=2, dim=0)
+
+        # Compare with previous embeddings
         for embedding in self.previous_embeddings:
             score = torch.nn.functional.cosine_similarity(
                 output, embedding, dim=0
@@ -94,6 +100,7 @@ class VideoExplanation:
         """
         Get images from video for explanation
         """
+
         logger.info("Starting video processing")
         # Time interval in seconds
         interval = 2

@@ -12,6 +12,10 @@ logger = logging.getLogger("Audio")
 
 
 class GenerateTranscription:
+    """
+    Transcription for audio
+    """
+
     def __init__(self, video_link, HF_KEY):
         self.video_link = video_link
         self.HF_KEY = HF_KEY
@@ -23,6 +27,9 @@ class GenerateTranscription:
         self.text = []
 
     def get_transcription(self, data):
+        """
+        Make huggingface call
+        """
         headers = {
             "Authorization": f"Bearer {self.HF_KEY}",
             "Content-Type": self.content_type,
@@ -31,6 +38,9 @@ class GenerateTranscription:
         return json.loads(response.content.decode("utf-8"))["text"]
 
     def segment_audio(self, audio_path):
+        """
+        Segment audio into 30 sec audio
+        """
         audio = AudioSegment.from_file(audio_path)
 
         # Calculate the total number of chunks
