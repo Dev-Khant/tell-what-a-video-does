@@ -1,6 +1,5 @@
 import streamlit as st
 from process.video_audio_explanation import Explain
-from process.llm import LLMGeneration
 
 st.title("Video Understanding and Q&A Tool")
 
@@ -20,7 +19,7 @@ if st.button("Explain"):
             )
             result_text = get_explanation.run()
 
-            st.text_area("Processed Text", "result_text", height=200)
+            st.text_area("Processed Text", result_text, height=250)
         else:
             st.warning(
                 "Please provide both the YouTube video link and Hugging Face Token."

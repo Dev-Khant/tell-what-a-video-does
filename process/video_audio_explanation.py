@@ -13,7 +13,7 @@ class Explain:
     def run(self):
         # for video
         video_part = VideoExplanation(self.yt_link, self.SERP_KEY)
-        video_explanation = video_part.process_video()
+        video_explanation, title, description = video_part.process_video()
 
         # for audio
         audio_part = GenerateTranscription(self.yt_link, self.HF_KEY)
@@ -21,9 +21,8 @@ class Explain:
 
         # merge both video and audio
         llm_part = SummaryGeneration(
-            self.OPENAI_KEY, video_explanation, audio_transcription
+            self.OPENAI_KEY, title, description, video_explanation, audio_transcription
         )
         complete_explanation = llm_part.run()
 
-        print("Video Explanation : ", video_explanation)
-        print("Audio Part : ", audio_transcription)
+        return complete_explanation

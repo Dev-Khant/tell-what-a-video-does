@@ -69,8 +69,10 @@ class VideoExplanation:
         title = results.get("knowledge_graph", [{"title": ""}])[0]["title"]
         texts = [res.get("text", "") for res in results.get("text_results", [])]
         visual_titles = sorted(
-            [res["title"] for res in results["visual_matches"]], key=len
-        )[:5]
+            [res.get("title", "") for res in results.get("visual_matches", [])], key=len
+        )
+        if len(visual_titles) > 5:
+            visual_titles = visual_titles[:5]
         return {"title": title, "texts": texts, "visual_titles": visual_titles}
 
     def check_similarity(self, img):
@@ -111,6 +113,8 @@ class VideoExplanation:
         # Create a YouTube object and get the highest resolution stream
         yt = YouTube(self.video_link)
         video_stream = yt.streams.filter(res="720p", progressive=True)[0]
+        title = yt.title
+        description = yt.description
 
         # Open the video stream with OpenCV
         cap = cv2.VideoCapture(video_stream.url)
@@ -140,4 +144,4 @@ class VideoExplanation:
         # Release the video capture object and close windows
         cap.release()
         logger.info("Video processing Done!")
-        return self.img_results
+        return self.img_results, title, description

@@ -18,7 +18,7 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 ## Technical 🖥️
 
-• [Hugging Face Transformers](https://huggingface.co/) : Utilized to access the OpenAI Whisper model for audio transcription.
+• [Hugging Face](https://huggingface.co/) : Utilized to access the OpenAI Whisper model for audio transcription.
 
 • [SerpApi](https://serpapi.com/) : Used it to access Google Lens API for getting image information.
 
