@@ -28,7 +28,7 @@ class VideoExplanation:
         self.model = SwiftFormerModel.from_pretrained("MBZUAI/swiftformer-xs")
 
         self.previous_embeddings = []
-        self.similarity_threshold = 0.2
+        self.similarity_threshold = 0.3  # Increase to consider more images
         self.img_results = []
 
     def upload_img(self, frame):
