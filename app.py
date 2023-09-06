@@ -1,5 +1,6 @@
 import streamlit as st
 from process.video_audio_explanation import Explain
+from process.qa_bot import QA_Bot
 
 st.title("Video Understanding and Q&A Tool")
 
@@ -19,8 +20,12 @@ if st.button("Explain"):
             )
             result_text = get_explanation.run()
 
-            st.text_area("Processed Text", result_text, height=250)
+            st.subheader("Short Explanation")
+            st.markdown(result_text)
+
+            bot = QA_Bot(result_text)
+            # TODO
+            # take prompt from user
+
         else:
-            st.warning(
-                "Please provide both the YouTube video link and Hugging Face Token."
-            )
+            st.warning("Please provide both the YouTube video link and all tokens.")
