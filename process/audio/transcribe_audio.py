@@ -35,7 +35,10 @@ class GenerateTranscription:
             "Content-Type": self.content_type,
         }
         response = requests.request("POST", self.API_URL, headers=headers, data=data)
-        return json.loads(response.content.decode("utf-8"))["text"]
+        if response.status_code == 200:
+            return json.loads(response.content.decode("utf-8"))["text"]
+        else:
+            return ""
 
     def segment_audio(self, audio_path):
         """

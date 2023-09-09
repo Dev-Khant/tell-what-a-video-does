@@ -4,7 +4,7 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 ## Features ✨
 
-👉 **Video Understanding** : The tool utilizes the **Transformer** model for audio transcription, converting spoken words into textual format. It also employs image captioning techniques to extract text from images within the video. **Image embeddings** are also used to compare images and only use images unqiue for extracting info. 
+👉 **Video Understanding** : The tool utilizes the **Transformer** model for audio transcription, converting spoken words into textual format. It also employs image captioning techniques to extract text from images within the video. **Image embeddings** are also used to compare images and only use images unqiue for extracting info. Video and Audio are processed **parallelly**.
 
 👉 **Question & Answer** : Users can ask questions about the video's content. The tool leverages the power of **Chromadb** as a vector database to provide accurate and contextually relevant answers.
 
@@ -18,7 +18,7 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 ## Technical 🖥️
 
-• [Hugging Face Transformers](https://huggingface.co/) : Utilized to access the OpenAI Whisper model for audio transcription.
+• [Hugging Face](https://huggingface.co/) : Utilized to access the OpenAI Whisper model for audio transcription.
 
 • [SerpApi](https://serpapi.com/) : Used it to access Google Lens API for getting image information.
 
@@ -28,6 +28,4 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 ## Work in Progress 🚧
 
-1. Finish complete flow.
-
-2. Add Chromadb for Q&A. 
+1. Add Chromadb for Q&A. 
