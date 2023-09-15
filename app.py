@@ -21,13 +21,13 @@ if st.button("Explain"):
             get_explanation = Explain(
                 video_link, openai_token, huggingface_token, serpapi_token
             )
-            result_text = get_explanation.run()
+            complete_explanation, short_explanation = get_explanation.run()
 
-            st.session_state.explanation = result_text
+            st.session_state.explanation = short_explanation
 
             # Initialize the bot if the OpenAI token is provided
             st.session_state.bot = QA_Bot(openai_token)
-            st.session_state.bot.store_in_vectordb(result_text)
+            st.session_state.bot.store_in_vectordb(complete_explanation)
         else:
             st.warning("Please provide both the YouTube video link and all tokens.")
 

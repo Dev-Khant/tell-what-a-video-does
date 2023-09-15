@@ -5,8 +5,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain, RetrievalQA
-from langchain.tools import DuckDuckGoSearchRun
+from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 
 
@@ -20,7 +19,6 @@ class QA_Bot:
         self.llm = ChatOpenAI(
             temperature=0.3, model_name="gpt-3.5-turbo", openai_api_key=openai_key
         )
-        self.ddg_search = DuckDuckGoSearchRun()
         self.agent = None
 
     def store_in_vectordb(self, explanation):
@@ -38,41 +36,13 @@ class QA_Bot:
         vectordb.persist()
         logger.info("Documents inserted to vectordb")
 
-        prompt_template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say 'False'.
-
-        {context}
-
-        Question: {question}"""
-        PROMPT = PromptTemplate(
-            template=prompt_template, input_variables=["context", "question"]
-        )
-
         self.agent = RetrievalQA.from_chain_type(
             llm=self.llm,
             retriever=vectordb.as_retriever(search_kwargs={"k": 3}),
-            chain_type_kwargs={"prompt": PROMPT},
         )
         logger.info("Agent ready!!")
 
-    def summarize_result(self, db_result, internet_result):
-        response_prompt = f"""
-                                Given 2 explanation from internet and a custom Vector database. Prepare a answer by understanding them
-                                in 20 words unless length of answer not specified.\n\n
-
-                                Internet : {internet_result}\n\n
-
-                                Vector DB : {db_result}
-                                """
-        final_response = self.llm.predict(response_prompt)
-        return final_response
-
     def retrieve(self, query):
-        db_result = self.agent({"query": query}, return_only_outputs=True)
-        if db_result["result"] == "False":
-            internet_result = self.ddg_search.run(query)
-            final_response = self.summarize_result(db_result["result"], internet_result)
-        else:
-            final_response = db_result["result"]
-
+        result = self.agent({"query": query}, return_only_outputs=True)
         logger.info("Result ready!")
-        return final_response
+        return result["result"]
