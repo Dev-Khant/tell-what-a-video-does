@@ -16,6 +16,8 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 • Run the streamlit app: `streamlit run app.py`
 
+• Provide **YouTube video** with your **OpenAI token**, **Huggingface token**, **SerpAPI token**
+
 ## Technical 🖥️
 
 • [Hugging Face](https://huggingface.co/): Utilized to access the OpenAI Whisper model for audio transcription.
@@ -26,4 +28,9 @@ This project allows you to input a YouTube video link, and it provides a compreh
 
 • [Chromadb](https://www.trychroma.com/): The vector database used for storing and retrieving Q&A information.
 
+## Work in Progress 🚧
 
+1. Add Weaviate and let the user select their VectorDB.
+2. Internet access to chatbot.
+3. Option to upload video.
+4. Store video explanations so they can be used later.
