@@ -5,7 +5,8 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chat_models import ChatOpenAI
-from langchain.chains import ConversationalRetrievalChain, RetrievalQA
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 
 
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +16,9 @@ logger = logging.getLogger("Q&A")
 class QA_Bot:
     def __init__(self, openai_key):
         self.openai_key = openai_key
+        self.llm = ChatOpenAI(
+            temperature=0.3, model_name="gpt-3.5-turbo", openai_api_key=openai_key
+        )
         self.agent = None
 
     def store_in_vectordb(self, explanation):
@@ -33,11 +37,7 @@ class QA_Bot:
         logger.info("Documents inserted to vectordb")
 
         self.agent = RetrievalQA.from_chain_type(
-            llm=ChatOpenAI(
-                temperature=0.3,
-                model_name="gpt-3.5-turbo",
-                openai_api_key=self.openai_key,
-            ),
+            llm=self.llm,
             retriever=vectordb.as_retriever(search_kwargs={"k": 3}),
         )
         logger.info("Agent ready!!")
